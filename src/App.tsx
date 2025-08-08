@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import TechCategories from './components/TechCategories';
@@ -10,52 +11,51 @@ import Dashboard from './components/Dashboard';
 import Footer from './components/Footer';
 import { useAuth } from './contexts/AuthContext';
 
-function App() {
-  const { user, loading, signIn, signOut } = useAuth();
+// Newly imported page components
+import DashboardPage from './pages/dashboard/DashboardPage';
+import CommunityPage from './pages/community/CommunityPage';
+import JobsPage from './pages/jobs/JobsPage';
+import CareerPage from './pages/career/CareerPage';
+import ResourcesPage from './pages/resources/ResourcesPage';
+import TechnologiesPage from './pages/technologies/TechnologiesPage';
+import TechnologyDetailPage from './pages/technologies/TechnologyDetailPage';
 
-  if (loading) {
-    return <p className="text-center mt-10">Loading...</p>;
-  }
+const App: React.FC = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div className="min-h-screen">
+    <Router>
       <Header />
-      <main>
-        <Hero />
+      <nav className="flex space-x-4 justify-center mb-8">
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="/dashboard">Dashboard</NavLink>
+        <NavLink to="/jobs">Jobs</NavLink>
+        <NavLink to="/learning">Learning</NavLink>
+        <NavLink to="/news">News</NavLink>
+        <NavLink to="/community">Community</NavLink>
+        <NavLink to="/career">Career</NavLink>
+        <NavLink to="/resources">Resources</NavLink>
+        <NavLink to="/technologies">Technologies</NavLink>
+      </nav>
 
-        {/* Show Dashboard if signed in */}
-        {user ? (
-          <>
-            <Dashboard />
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={signOut}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              >
-                Sign Out
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={signIn}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Sign In with Google
-            </button>
-          </div>
-        )}
+      <Routes>
+        <Route path="/" element={<Hero />} />
+        <Route path="/dashboard" element={user ? <DashboardPage /> : <Hero />} />
+        <Route path="/jobs" element={<JobsPage />} />
+        <Route path="/career" element={<CareerPage />} />
+        <Route path="/resources" element={<ResourcesPage />} />
+        <Route path="/technologies" element={<TechnologiesPage />} />
+        <Route path="/technologies/ai" element={<TechnologyDetailPage />} />
+        <Route path="/learning" element={<LearningResources />} />
+        <Route path="/news" element={<TechNews />} />
+        <Route path="/community" element={<CommunityPage />} />
+      </Routes>
 
-        <TechCategories />
-        <JobOpportunities />
-        <LearningResources />
-        <TechNews />
-        <Community />
-      </main>
       <Footer />
-    </div>
+    </Router>
   );
-}
+};
 
 export default App;
