@@ -1,7 +1,7 @@
 // src/components/Header.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { User } from '../sevices/authService';
+import { User } from '../contexts/AuthContext';  // <-- Fix import path (was '..contexts/AuthContext')
 import { Menu, X } from 'lucide-react';
 
 interface HeaderProps {
@@ -76,6 +76,7 @@ const Header: React.FC<HeaderProps> = ({
           <button
             onClick={toggleMobileMenu}
             className="md:hidden p-2 rounded-md text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-600"
+            aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -86,48 +87,16 @@ const Header: React.FC<HeaderProps> = ({
       {mobileMenuOpen && (
         <nav className="md:hidden bg-white border-t border-gray-200 shadow">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link
-              to="/technologies"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
-              onClick={toggleMobileMenu}
-            >
-              Technologies
-            </Link>
-            <Link
-              to="/jobs"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
-              onClick={toggleMobileMenu}
-            >
-              Jobs
-            </Link>
-            <Link
-              to="/career"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
-              onClick={toggleMobileMenu}
-            >
-              Career
-            </Link>
-            <Link
-              to="/resources"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
-              onClick={toggleMobileMenu}
-            >
-              Resources
-            </Link>
-            <Link
-              to="/news"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
-              onClick={toggleMobileMenu}
-            >
-              Tech News
-            </Link>
-            <Link
-              to="/community"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
-              onClick={toggleMobileMenu}
-            >
-              Community
-            </Link>
+            {['technologies', 'jobs', 'career', 'resources', 'news', 'community'].map((path) => (
+              <Link
+                key={path}
+                to={`/${path}`}
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
+                onClick={toggleMobileMenu}
+              >
+                {path.charAt(0).toUpperCase() + path.slice(1).replace('-', ' ')}
+              </Link>
+            ))}
 
             {/* Auth buttons in mobile */}
             <div className="mt-4 px-3">
@@ -135,8 +104,8 @@ const Header: React.FC<HeaderProps> = ({
                 <>
                   <span className="block mb-2 text-gray-700">Hello, {user.displayName ?? 'User'}</span>
                   <button
-                    onClick={() => {
-                      onSignOut();
+                    onClick={async () => {
+                      await onSignOut();
                       toggleMobileMenu();
                     }}
                     className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
@@ -146,8 +115,8 @@ const Header: React.FC<HeaderProps> = ({
                 </>
               ) : (
                 <button
-                  onClick={() => {
-                    onSignIn();
+                  onClick={async () => {
+                    await onSignIn();
                     toggleMobileMenu();
                   }}
                   className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"

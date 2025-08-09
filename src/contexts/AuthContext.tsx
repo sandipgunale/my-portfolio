@@ -4,16 +4,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   signInWithGoogle, 
   signOut as signOutService, 
-  onAuthStateChange 
+  onAuthStateChange, 
+  User as AuthUser 
 } from '../services/authService';
+import defaultAvatar from '../assets/default-avatar.png';
 
-// Export User interface
-export interface User {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  photoURL: string | null;
-}
+export interface User extends AuthUser {} // Extend to keep types consistent
 
 interface AuthContextType {
   user: User | null;
@@ -29,6 +25,13 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
 });
 
+// Helper to add default avatar and displayName if missing
+const enhanceUser = (user: User): User => ({
+  ...user,
+  photoURL: user.photoURL || defaultAvatar,
+  displayName: user.displayName || user.email || 'Anonymous User',
+});
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,9 +39,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async () => {
     try {
       const signedInUser = await signInWithGoogle();
-      setUser(signedInUser);
+      if (signedInUser) {
+        setUser(enhanceUser(signedInUser));
+      }
     } catch (error) {
-      console.error("Sign in error:", error);
+      console.error('Sign in error:', error);
     }
   };
 
@@ -47,13 +52,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await signOutService();
       setUser(null);
     } catch (error) {
-      console.error("Sign out error:", error);
+      console.error('Sign out error:', error);
     }
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChange((currentUser) => {
-      setUser(currentUser);
+      if (currentUser) {
+        setUser(enhanceUser(currentUser));
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
 
@@ -62,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
-      {children}
+      {!loading ? children : null}
     </AuthContext.Provider>
   );
 };

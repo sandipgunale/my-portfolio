@@ -7,7 +7,6 @@ import {
   Users,
   Bell,
   TrendingUp,
-  UserCircle,
   ArrowRight,
 } from 'lucide-react';
 

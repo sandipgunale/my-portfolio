@@ -1,11 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   MapPin,
-  DollarSign,
   Clock,
   Briefcase,
   Star,
-  Filter,
   Search,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
@@ -14,34 +12,35 @@ const jobListings = [
   {
     id: 1,
     title: "Senior React Developer",
-    company: "TechCorp Inc.",
-    location: "San Francisco, CA",
+    company: "Infosys Technologies",
+    location: "Bangalore, Karnataka",
     type: "Full-time",
-    salary: "$120K - $160K",
+    salary: "₹12L – ₹18L per annum",
     remote: true,
     posted: "2 days ago",
     description:
-      "We're looking for an experienced React developer to join our growing team focused on building scalable web applications with modern technologies.",
+      "We are seeking an experienced React developer to work on scalable enterprise web applications for global clients.",
     requirements: [
       "5+ years React experience",
       "TypeScript proficiency",
       "Team leadership",
       "REST APIs",
     ],
-    logo: "https://images.pexels.com/photos/267350/pexels-photo-267350.jpeg?auto=compress&cs=tinysrgb&w=100",
+    logo: "https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg?auto=compress&cs=tinysrgb&w=100",
     featured: true,
+    applyLink: "https://careers.infosys.com",
   },
   {
     id: 2,
     title: "Cloud Solutions Architect",
-    company: "CloudTech Solutions",
-    location: "Seattle, WA",
+    company: "Tata Consultancy Services (TCS)",
+    location: "Hyderabad, Telangana",
     type: "Full-time",
-    salary: "$140K - $180K",
+    salary: "₹18L – ₹24L per annum",
     remote: false,
     posted: "1 day ago",
     description:
-      "Design and implement scalable, secure cloud infrastructure solutions across AWS, Azure, and GCP platforms.",
+      "Architect scalable cloud infrastructure solutions across AWS, Azure, and GCP for enterprise clients.",
     requirements: [
       "AWS certification",
       "5+ years cloud experience",
@@ -49,74 +48,79 @@ const jobListings = [
       "Infrastructure as Code",
     ],
     logo: "https://images.pexels.com/photos/1181673/pexels-photo-1181673.jpeg?auto=compress&cs=tinysrgb&w=100",
+    applyLink: "https://www.tcs.com/careers",
   },
   {
     id: 3,
     title: "DevOps Engineer",
-    company: "StartupXYZ",
-    location: "Austin, TX",
+    company: "Wipro Digital",
+    location: "Pune, Maharashtra",
     type: "Full-time",
-    salary: "$100K - $130K",
+    salary: "₹10L – ₹15L per annum",
     remote: true,
     posted: "3 days ago",
     description:
-      "Help build and maintain our CI/CD pipelines, container orchestration with Kubernetes, and cloud infrastructure.",
+      "Maintain CI/CD pipelines, manage Kubernetes clusters, and optimize cloud deployments for high availability.",
     requirements: ["Docker/Kubernetes", "CI/CD experience", "Linux administration"],
     logo: "https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=100",
+    applyLink: "https://careers.wipro.com",
   },
   {
     id: 4,
     title: "Data Scientist",
-    company: "DataDriven Corp",
-    location: "New York, NY",
+    company: "Fractal Analytics",
+    location: "Mumbai, Maharashtra",
     type: "Full-time",
-    salary: "$110K - $150K",
+    salary: "₹14L – ₹20L per annum",
     remote: true,
     posted: "4 days ago",
     description:
-      "Analyze complex datasets, develop machine learning models, and generate actionable insights for business growth.",
+      "Work with complex datasets, create ML models, and generate insights for analytics-driven decision-making.",
     requirements: ["Python/R proficiency", "Machine learning", "Statistics background"],
     logo: "https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=100",
+    applyLink: "https://fractal.ai/careers",
   },
   {
     id: 5,
     title: "Cybersecurity Analyst",
-    company: "SecureNet Inc.",
-    location: "Washington, DC",
+    company: "HCL Technologies",
+    location: "Noida, Uttar Pradesh",
     type: "Full-time",
-    salary: "$90K - $120K",
+    salary: "₹9L – ₹13L per annum",
     remote: false,
     posted: "5 days ago",
     description:
-      "Monitor and respond to security threats, conduct vulnerability assessments, and implement incident response strategies.",
+      "Monitor security threats, conduct vulnerability assessments, and manage incident response.",
     requirements: ["Security certifications", "Incident response", "Network security"],
     logo: "https://images.pexels.com/photos/60504/security-protection-anti-virus-software-60504.jpeg?auto=compress&cs=tinysrgb&w=100",
+    applyLink: "https://www.hcltech.com/careers",
   },
   {
     id: 6,
     title: "Mobile App Developer",
-    company: "MobileFirst Ltd.",
-    location: "Los Angeles, CA",
+    company: "Zomato",
+    location: "Gurgaon, Haryana",
     type: "Contract",
-    salary: "$80K - $110K",
+    salary: "₹8L – ₹12L per annum",
     remote: true,
     posted: "1 week ago",
     description:
-      "Develop cross-platform mobile applications using React Native, collaborating closely with UX/UI designers and backend teams.",
+      "Develop high-performance mobile apps using React Native and collaborate with design & backend teams.",
     requirements: ["React Native", "iOS/Android development", "API integration"],
     logo: "https://images.pexels.com/photos/147413/twitter-facebook-together-exchange-of-information-147413.jpeg?auto=compress&cs=tinysrgb&w=100",
+    applyLink: "https://www.zomato.com/careers",
   },
   {
     id: 7,
     title: "Machine Learning Engineer",
-    company: "AI Innovations",
-    location: "Boston, MA",
+    company: "Flipkart",
+    location: "Bangalore, Karnataka",
     type: "Full-time",
-    salary: "$130K - $170K",
+    salary: "₹15L – ₹22L per annum",
     remote: true,
     posted: "3 days ago",
     description:
-      "Develop and deploy ML models for real-time applications, optimizing model performance and scalability.",
+      "Design and deploy ML models for e-commerce applications, ensuring scalability and accuracy.",
     requirements: [
       "Python, TensorFlow/PyTorch",
       "ML algorithms",
@@ -124,26 +128,51 @@ const jobListings = [
       "Cloud deployment",
     ],
     logo: "https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg?auto=compress&cs=tinysrgb&w=100",
+    applyLink: "https://www.flipkartcareers.com",
   },
   {
     id: 8,
     title: "Frontend Engineer",
-    company: "NextGen Apps",
-    location: "Remote",
+    company: "Freshworks",
+    location: "Chennai, Tamil Nadu",
     type: "Full-time",
-    salary: "$100K - $140K",
+    salary: "₹10L – ₹16L per annum",
     remote: true,
     posted: "6 days ago",
     description:
-      "Build intuitive user interfaces with React, Redux, and Tailwind CSS for high-performance web apps.",
+      "Create user-friendly UIs with React, Redux, and Tailwind CSS for SaaS products used by global clients.",
     requirements: ["React", "Redux", "CSS-in-JS", "Responsive design"],
     logo: "https://images.pexels.com/photos/1181352/pexels-photo-1181352.jpeg?auto=compress&cs=tinysrgb&w=100",
     featured: true,
+    applyLink: "https://www.freshworks.com/company/careers/",
   },
 ];
 
 const JobOpportunities: React.FC = () => {
   const { user } = useAuth();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("All Locations");
+  const [selectedType, setSelectedType] = useState("All Types");
+
+  const filteredJobs = jobListings.filter((job) => {
+    const matchesSearch =
+      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.requirements.some((req) =>
+        req.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+    const matchesLocation =
+      selectedLocation === "All Locations" ||
+      job.location.toLowerCase().includes(selectedLocation.toLowerCase());
+
+    const matchesType =
+      selectedType === "All Types" ||
+      job.type.toLowerCase() === selectedType.toLowerCase();
+
+    return matchesSearch && matchesLocation && matchesType;
+  });
 
   return (
     <section className="py-20 bg-gray-50">
@@ -151,50 +180,82 @@ const JobOpportunities: React.FC = () => {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Job Opportunities</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover your next career opportunity with top tech companies
+            Discover your next career opportunity with top tech companies in India
           </p>
         </div>
 
-        {/* Search and Filters */}
+        {/* Search & Filters */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4">
+            {/* Search */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type="text"
                 placeholder="Search jobs, companies, or skills..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+
+            {/* Filters */}
             <div className="flex gap-3">
-              <select className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              {/* Location Filter */}
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
                 <option>All Locations</option>
-                <option>Remote</option>
-                <option>San Francisco</option>
-                <option>New York</option>
-                <option>Seattle</option>
-                <option>Austin</option>
-                <option>Boston</option>
-                <option>Los Angeles</option>
+                <optgroup label="Karnataka">
+                  <option>Bangalore</option>
+                  <option>Mysore</option>
+                </optgroup>
+                <optgroup label="Telangana">
+                  <option>Hyderabad</option>
+                </optgroup>
+                <optgroup label="Maharashtra">
+                  <option>Pune</option>
+                  <option>Mumbai</option>
+                  <option>Nagpur</option>
+                </optgroup>
+                <optgroup label="Tamil Nadu">
+                  <option>Chennai</option>
+                  <option>Coimbatore</option>
+                </optgroup>
+                <optgroup label="Delhi NCR">
+                  <option>Gurgaon</option>
+                  <option>Noida</option>
+                  <option>New Delhi</option>
+                </optgroup>
+                <optgroup label="West Bengal">
+                  <option>Kolkata</option>
+                </optgroup>
+                <optgroup label="Other">
+                  <option>Remote</option>
+                </optgroup>
               </select>
-              <select className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+
+              {/* Job Type Filter */}
+              <select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
                 <option>All Types</option>
                 <option>Full-time</option>
                 <option>Part-time</option>
                 <option>Contract</option>
                 <option>Internship</option>
               </select>
-              <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2">
-                <Filter className="h-4 w-4" />
-                <span>Filter</span>
-              </button>
             </div>
           </div>
         </div>
 
         {/* Job Listings */}
         <div className="space-y-6">
-          {jobListings.map((job) => (
+          {filteredJobs.map((job) => (
             <div
               key={job.id}
               className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${
@@ -245,13 +306,19 @@ const JobOpportunities: React.FC = () => {
 
                   <div className="text-right">
                     <div className="flex items-center text-green-600 font-bold text-lg mb-2">
-                      <DollarSign className="h-5 w-5" />
-                      <span>{job.salary}</span>
-                    </div>
+                    <span className="h-5 w-5 flex items-center justify-center"></span>
+                    <span>{job.salary}</span>
+                  </div>
+
                     {user ? (
-                      <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                      <a
+                        href={job.applyLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 inline-block"
+                      >
                         Apply Now
-                      </button>
+                      </a>
                     ) : (
                       <button className="bg-gray-300 text-gray-500 px-6 py-2 rounded-lg cursor-not-allowed">
                         Sign in to Apply
@@ -279,6 +346,10 @@ const JobOpportunities: React.FC = () => {
             </div>
           ))}
         </div>
+
+        {filteredJobs.length === 0 && (
+          <div className="text-center text-gray-500 mt-6">No jobs found</div>
+        )}
 
         <div className="text-center mt-12">
           <button className="bg-gradient-to-r from-blue-600 to-teal-600 text-white px-8 py-3 rounded-lg font-semibold text-lg hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">

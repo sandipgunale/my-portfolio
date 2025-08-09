@@ -14,11 +14,12 @@ export interface User {
   photoURL: string | null;
 }
 
+// Map Firebase user to your User type, defaulting missing fields to null
 const mapUser = (firebaseUser: FirebaseUser): User => ({
   uid: firebaseUser.uid,
-  email: firebaseUser.email,
-  displayName: firebaseUser.displayName,
-  photoURL: firebaseUser.photoURL
+  email: firebaseUser.email ?? null,
+  displayName: firebaseUser.displayName ?? null,
+  photoURL: firebaseUser.photoURL ?? null,
 });
 
 export const signInWithGoogle = async (): Promise<User | null> => {
