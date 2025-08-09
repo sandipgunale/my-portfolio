@@ -13,6 +13,9 @@ export interface User {
   photoURL: string | null;
 }
 
+// Default profile image if Google profile image is not available
+const defaultPhotoURL = '/default-avatar.png';
+
 export const signInWithGoogle = async (): Promise<User | null> => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
@@ -22,7 +25,8 @@ export const signInWithGoogle = async (): Promise<User | null> => {
       uid: user.uid,
       email: user.email,
       displayName: user.displayName,
-      photoURL: user.photoURL
+      // Use Google profile photo or fallback to default
+      photoURL: user.photoURL ?? defaultPhotoURL,
     };
   } catch (error) {
     console.error('Error signing in with Google:', error);
@@ -42,13 +46,13 @@ export const signOut = async (): Promise<void> => {
 export const onAuthStateChange = (callback: (user: User | null) => void) => {
   return onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
     if (firebaseUser) {
-      const user: User = {
+      // Pass user info with fallback photoURL
+      callback({
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL
-      };
-      callback(user);
+        photoURL: firebaseUser.photoURL ?? defaultPhotoURL,
+      });
     } else {
       callback(null);
     }

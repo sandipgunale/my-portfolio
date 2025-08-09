@@ -1,146 +1,164 @@
-import React, { useState } from 'react';
-import { Search, Menu, X, Briefcase, TrendingUp, Users, BookOpen, LogOut } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+// src/components/Header.tsx
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { User } from '../sevices/authService';
+import { Menu, X } from 'lucide-react';
 
-const Header: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, signOut } = useAuth();
+interface HeaderProps {
+  user: User | null;
+  onSignIn: () => Promise<void>;
+  onSignOut: () => Promise<void>;
+  mobileMenuOpen: boolean;
+  toggleMobileMenu: () => void;
+}
 
-  const navItems = [
-    { name: 'Technologies', icon: TrendingUp, path: '/technologies' },
-    { name: 'Jobs', icon: Briefcase, path: '/jobs' },
-    { name: 'Career', icon: Users, path: '/career' },
-    { name: 'Resources', icon: BookOpen, path: '/resources' },
-  ];
-
+const Header: React.FC<HeaderProps> = ({
+  user,
+  onSignIn,
+  onSignOut,
+  mobileMenuOpen,
+  toggleMobileMenu,
+}) => {
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-50">
+    <header className="bg-white shadow sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between h-16 items-center">
           {/* Logo */}
-          <div className="flex items-center space-x-4">
-            <div className="bg-gradient-to-r from-blue-600 to-teal-600 p-2 rounded-lg">
-              <TrendingUp className="h-8 w-8 text-white" />
-            </div>
-            <Link
-              to="/"
-              className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent"
-            >
-              TechPortal
-            </Link>
-          </div>
+          <Link to="/" className="text-2xl font-bold text-blue-600">
+            TechPortal
+          </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Nav */}
           <nav className="hidden md:flex space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
-              >
-                <item.icon className="h-4 w-4" />
-                <span>{item.name}</span>
-              </Link>
-            ))}
+            <Link to="/technologies" className="text-gray-700 hover:text-blue-600">
+              Technologies
+            </Link>
+            <Link to="/jobs" className="text-gray-700 hover:text-blue-600">
+              Jobs
+            </Link>
+            <Link to="/career" className="text-gray-700 hover:text-blue-600">
+              Career
+            </Link>
+            <Link to="/resources" className="text-gray-700 hover:text-blue-600">
+              Resources
+            </Link>
+            <Link to="/news" className="text-gray-700 hover:text-blue-600">
+              Tech News
+            </Link>
+            <Link to="/community" className="text-gray-700 hover:text-blue-600">
+              Community
+            </Link>
           </nav>
 
-          {/* User Info + Search + Menu */}
-          <div className="flex items-center space-x-4">
-            {user && (
-              <div className="hidden sm:flex items-center space-x-3">
-                <img
-                  src={user.photoURL || 'https://via.placeholder.com/32'}
-                  alt={user.displayName || 'User'}
-                  className="w-8 h-8 rounded-full"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  {user.displayName || user.email}
-                </span>
+          {/* Auth Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            {user ? (
+              <>
+                <span className="text-gray-700">Hello, {user.displayName ?? 'User'}</span>
                 <button
-                  onClick={signOut}
-                  className="p-2 text-gray-500 hover:text-red-600 transition-colors duration-200"
-                  title="Sign out"
+                  onClick={onSignOut}
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
                 >
-                  <LogOut className="h-4 w-4" />
+                  Sign Out
                 </button>
-              </div>
+              </>
+            ) : (
+              <button
+                onClick={onSignIn}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+              >
+                Sign In with Google
+              </button>
             )}
-
-            <div className="hidden sm:block relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
-              />
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-            >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
           </div>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={toggleMobileMenu}
+            className="md:hidden p-2 rounded-md text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-600"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
+      </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
-            <nav className="space-y-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </Link>
-              ))}
-            </nav>
+      {/* Mobile Nav */}
+      {mobileMenuOpen && (
+        <nav className="md:hidden bg-white border-t border-gray-200 shadow">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <Link
+              to="/technologies"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
+              onClick={toggleMobileMenu}
+            >
+              Technologies
+            </Link>
+            <Link
+              to="/jobs"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
+              onClick={toggleMobileMenu}
+            >
+              Jobs
+            </Link>
+            <Link
+              to="/career"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
+              onClick={toggleMobileMenu}
+            >
+              Career
+            </Link>
+            <Link
+              to="/resources"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
+              onClick={toggleMobileMenu}
+            >
+              Resources
+            </Link>
+            <Link
+              to="/news"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
+              onClick={toggleMobileMenu}
+            >
+              Tech News
+            </Link>
+            <Link
+              to="/community"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100"
+              onClick={toggleMobileMenu}
+            >
+              Community
+            </Link>
 
-            {user && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="flex items-center space-x-3 mb-3">
-                  <img
-                    src={user.photoURL || 'https://via.placeholder.com/32'}
-                    alt={user.displayName || 'User'}
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    {user.displayName || user.email}
-                  </span>
-                </div>
+            {/* Auth buttons in mobile */}
+            <div className="mt-4 px-3">
+              {user ? (
+                <>
+                  <span className="block mb-2 text-gray-700">Hello, {user.displayName ?? 'User'}</span>
+                  <button
+                    onClick={() => {
+                      onSignOut();
+                      toggleMobileMenu();
+                    }}
+                    className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
                 <button
                   onClick={() => {
-                    signOut();
-                    setIsMenuOpen(false);
+                    onSignIn();
+                    toggleMobileMenu();
                   }}
-                  className="flex items-center space-x-2 text-red-600 hover:text-red-700 transition-colors duration-200 font-medium"
+                  className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                 >
-                  <LogOut className="h-4 w-4" />
-                  <span>Sign Out</span>
+                  Sign In with Google
                 </button>
-              </div>
-            )}
-
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
-                />
-              </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
+        </nav>
+      )}
     </header>
   );
 };

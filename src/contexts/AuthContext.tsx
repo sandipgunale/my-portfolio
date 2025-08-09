@@ -1,11 +1,19 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+// src/contexts/AuthContext.tsx
+
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
-  User, 
   signInWithGoogle, 
-  signOut, 
-  onAuthStateChange, 
-  checkRedirectResult 
+  signOut as signOutService, 
+  onAuthStateChange 
 } from '../services/authService';
+
+// Export User interface
+export interface User {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -14,73 +22,49 @@ interface AuthContextType {
   signOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+  signIn: async () => {},
+  signOut: async () => {},
+});
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // First check if we returned from a redirect
-    (async () => {
-      const redirectUser = await checkRedirectResult();
-      if (redirectUser) {
-        setUser(redirectUser);
-      }
-    })();
+  const signIn = async () => {
+    try {
+      const signedInUser = await signInWithGoogle();
+      setUser(signedInUser);
+    } catch (error) {
+      console.error("Sign in error:", error);
+    }
+  };
 
-    const unsubscribe = onAuthStateChange((firebaseUser) => {
-      setUser(firebaseUser);
+  const signOut = async () => {
+    try {
+      await signOutService();
+      setUser(null);
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChange((currentUser) => {
+      setUser(currentUser);
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  const handleSignIn = async () => {
-    try {
-      setLoading(true);
-      await signInWithGoogle();
-    } catch (error) {
-      console.error('Sign in failed:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignOut = async () => {
-    try {
-      setLoading(true);
-      await signOut();
-    } catch (error) {
-      console.error('Sign out failed:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const value: AuthContextType = {
-    user,
-    loading,
-    signIn: handleSignIn,
-    signOut: handleSignOut,
-  };
-
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

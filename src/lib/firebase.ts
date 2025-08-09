@@ -1,24 +1,26 @@
-// Import Firebase SDK functions
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from "firebase/analytics";
 
-// Your Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDhK5e_hy5VFadVL4RLHAZNekPuZwSSsfA",
   authDomain: "techportal-b0aef.firebaseapp.com",
   projectId: "techportal-b0aef",
-  storageBucket: "techportal-b0aef.appspot.com", // FIXED
+  storageBucket: "techportal-b0aef.appspot.com",
   messagingSenderId: "697940305481",
   appId: "1:697940305481:web:6ea4c075d7c9c9a92a4198",
   measurementId: "G-42TLX84CTH"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
-// Auth setup
+let analytics;
+isSupported().then((supported) => {
+  if (supported) {
+    analytics = getAnalytics(app);
+  }
+});
+
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope('profile');
