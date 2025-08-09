@@ -175,11 +175,14 @@ const JobOpportunities: React.FC = () => {
   });
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Job Opportunities</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-16 px-2 sm:px-0">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Job Opportunities
+          </h2>
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
             Discover your next career opportunity with top tech companies in India
           </p>
         </div>
@@ -200,12 +203,12 @@ const JobOpportunities: React.FC = () => {
             </div>
 
             {/* Filters */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap justify-start lg:justify-end">
               {/* Location Filter */}
               <select
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px]"
               >
                 <option>All Locations</option>
                 <optgroup label="Karnataka">
@@ -241,7 +244,7 @@ const JobOpportunities: React.FC = () => {
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px]"
               >
                 <option>All Types</option>
                 <option>Full-time</option>
@@ -258,90 +261,91 @@ const JobOpportunities: React.FC = () => {
           {filteredJobs.map((job) => (
             <div
               key={job.id}
-              className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${
+              className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col sm:flex-row sm:items-center p-6 gap-6 ${
                 job.featured ? "ring-2 ring-blue-500" : ""
               }`}
             >
               {job.featured && (
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2">
-                  <div className="flex items-center space-x-2">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full self-start mb-4 sm:mb-0">
+                  <div className="flex items-center space-x-2 text-sm font-medium">
                     <Star className="h-4 w-4" />
-                    <span className="text-sm font-medium">Featured Job</span>
+                    <span>Featured Job</span>
                   </div>
                 </div>
               )}
 
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-start space-x-4">
-                    <img
-                      src={job.logo}
-                      alt={job.company}
-                      className="w-16 h-16 rounded-lg object-cover"
-                    />
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">{job.title}</h3>
-                      <p className="text-lg text-gray-700 mb-2">{job.company}</p>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <div className="flex items-center space-x-1">
-                          <MapPin className="h-4 w-4" />
-                          <span>{job.location}</span>
-                          {job.remote && (
-                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs ml-2">
-                              Remote
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Briefcase className="h-4 w-4" />
-                          <span>{job.type}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Clock className="h-4 w-4" />
-                          <span>{job.posted}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+              {/* Logo */}
+              <img
+                src={job.logo}
+                alt={job.company}
+                className="w-24 h-24 rounded-lg object-cover flex-shrink-0"
+              />
 
-                  <div className="text-right">
-                    <div className="flex items-center text-green-600 font-bold text-lg mb-2">
-                    <span className="h-5 w-5 flex items-center justify-center"></span>
-                    <span>{job.salary}</span>
-                  </div>
-
-                    {user ? (
-                      <a
-                        href={job.applyLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 inline-block"
-                      >
-                        Apply Now
-                      </a>
-                    ) : (
-                      <button className="bg-gray-300 text-gray-500 px-6 py-2 rounded-lg cursor-not-allowed">
-                        Sign in to Apply
-                      </button>
+              {/* Job info */}
+              <div className="flex flex-col flex-grow min-w-0">
+                <h3 className="text-xl font-bold text-gray-900 truncate">{job.title}</h3>
+                <p className="text-lg text-gray-700 truncate">{job.company}</p>
+                <div className="flex flex-wrap items-center space-x-4 text-sm text-gray-500 mt-2">
+                  <div className="flex items-center space-x-1">
+                    <MapPin className="h-4 w-4" />
+                    <span>{job.location}</span>
+                    {job.remote && (
+                      <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs ml-2 whitespace-nowrap">
+                        Remote
+                      </span>
                     )}
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Briefcase className="h-4 w-4" />
+                    <span>{job.type}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Clock className="h-4 w-4" />
+                    <span>{job.posted}</span>
                   </div>
                 </div>
 
-                <p className="text-gray-600 mb-4">{job.description}</p>
+                <p className="text-gray-600 mt-4 line-clamp-3">{job.description}</p>
 
-                <div className="border-t border-gray-200 pt-4">
+                <div className="border-t border-gray-200 pt-4 mt-auto">
                   <h4 className="font-semibold text-gray-900 mb-2">Requirements:</h4>
                   <div className="flex flex-wrap gap-2">
                     {job.requirements.map((req, index) => (
                       <span
                         key={index}
-                        className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                        className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm whitespace-nowrap"
                       >
                         {req}
                       </span>
                     ))}
                   </div>
                 </div>
+              </div>
+
+              {/* Salary & Apply */}
+              <div className="flex flex-col items-end min-w-[160px] gap-4">
+                <div className="text-green-600 font-bold text-lg whitespace-nowrap">
+                  {job.salary}
+                </div>
+
+                {user ? (
+                  <a
+                    href={job.applyLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 inline-block text-center whitespace-nowrap"
+                  >
+                    Apply Now
+                  </a>
+                ) : (
+                  <button
+                    className="bg-gray-300 text-gray-500 px-6 py-2 rounded-lg cursor-not-allowed"
+                    title="Please sign in to apply"
+                    disabled
+                  >
+                    Sign in to Apply
+                  </button>
+                )}
               </div>
             </div>
           ))}
